@@ -11,3 +11,7 @@ I am using my codes below:
  - **[png-font](https://github.com/ericoporto/png-font) :** for pixel font drawing.
 
  - **[color.js](https://github.com/ericoporto/TouchyEngine/blob/master/color.js) :** tiny 1.47kb js for color normalization.
+
+ I am also using Howler for sound:
+
+  - **[howler.js](https://github.com/goldfire/howler.js) :** a lib for making audio on webpages easier.
