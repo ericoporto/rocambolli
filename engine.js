@@ -4,13 +4,18 @@ ENUM_AIR=0;
 ENUM_COIN=1;
 ENUM_END=2;
 ENUM_DIE=3;
+ENUM_ROCAMBOLLI=4;
 COINS = 0;
+ROCAMBOLLIS = [];
 
 var first_action = 0;
 
 function update_coins(){
     hud_ctx.clearRect(w-48,2,46,16)
     png_font.drawText(COINS.toString(),[w-48,0])
+}
+
+function update_rocambolli(){
 }
 
 function setpixelated(context){
@@ -39,6 +44,9 @@ function reset(){
 function game_start(){
 
     loadLevels()
+    for (var i=0;i<level.length; i++){
+      ROCAMBOLLIS.push(false)
+    }
 
 
     bg_c = document.getElementById('bg_canvas')
@@ -104,13 +112,30 @@ function game_start(){
             }
 
         },
+        grabRocambolli: function(xy){
+            ctx.clearRect(xy[0]-1,xy[1]-1,3,3)
+            for(var i=0; i<3; i++){
+                for(var j=0; j<3; j++){
+                    if(walkmatrix[  xy[1]-1+j][ xy[0]-1+i]== ENUM_ROCAMBOLLI){
+                        walkmatrix[  xy[1]-1+j][ xy[0]-1+i] =ENUM_AIR
+                    }
+                }
+            }
+
+        },
         checkMatrix: function(xy,modfier){
             var foundcoin = false;
+            var foundrocambolli = false;
             for(var i=0; i<pl.w; i++){
                 for(var j=0; j<pl.h; j++){
                     if(walkmatrix[  xy[1] + modfier[1] - pl.h + j ][ xy[0] + modfier[0] - Math.floor(pl.w/2)+ i ] == ENUM_COIN) {
                         pl.grabCoin([xy[0] + modfier[0] - Math.floor(pl.w/2) + i,xy[1] + modfier[1] - pl.h + j])
                         foundcoin=true;
+                        break;
+
+                    } else if(walkmatrix[  xy[1] + modfier[1] - pl.h + j ][ xy[0] + modfier[0] - Math.floor(pl.w/2)+ i ] == ENUM_ROCAMBOLLI) {
+                        pl.grabRocambolli([xy[0] + modfier[0] - Math.floor(pl.w/2) + i,xy[1] + modfier[1] - pl.h + j])
+                        foundrocambolli=true;
                         break;
 
                     } else if(walkmatrix[  xy[1] + modfier[1] - pl.h + j ][ xy[0] + modfier[0] - Math.floor(pl.w/2)+ i ] == ENUM_END) {
@@ -119,6 +144,7 @@ function game_start(){
                         break;
                     } else if(walkmatrix[  xy[1] + modfier[1] - pl.h + j ][ xy[0] + modfier[0] - Math.floor(pl.w/2)+ i ] == ENUM_DIE) {
                         walkmatrix[  xy[1] + modfier[1] - pl.h + j ][ xy[0] + modfier[0] - Math.floor(pl.w/2) + i ] = ENUM_AIR;
+                        audio_die()
                         reset()
                         return false
                     }
@@ -127,11 +153,15 @@ function game_start(){
             if(walkmatrix[xy[1]+modfier[1]][xy[0]+modfier[0]] == ENUM_COIN){
                 pl.grabCoin([xy[0]+modfier[0],xy[1]+modfier[1]])
                 foundcoin=true;
+            } else if(walkmatrix[xy[1]+modfier[1]][xy[0]+modfier[0]] == ENUM_ROCAMBOLLI){
+                pl.grabRocambolli([xy[0]+modfier[0],xy[1]+modfier[1]])
+                foundrocambolli=true;
             } else if(walkmatrix[xy[1]+modfier[1]][xy[0]+modfier[0]] == ENUM_END){
                 walkmatrix[  xy[1] + modfier[1] - pl.h + j ][ xy[0] + modfier[0] - Math.floor(pl.w/2) + i ] = ENUM_AIR;
                 nextLevel()
             } else if(walkmatrix[xy[1]+modfier[1]][xy[0]+modfier[0]] == ENUM_DIE){
                 walkmatrix[  xy[1] + modfier[1] - pl.h + j ][ xy[0] + modfier[0] - Math.floor(pl.w/2) + i ] = ENUM_AIR;
+                audio_die()
                 reset()
                 return false
             }
@@ -140,6 +170,12 @@ function game_start(){
                 COINS++;
                 update_coins()
                 audio_coin()
+            }
+
+            if(foundrocambolli){
+                ROCAMBOLLIS[curr_level]=true;
+                update_rocambolli()
+                audio_rocambolli()
             }
 
             return true
@@ -249,6 +285,7 @@ function drawLevel(){
 }
 
 function nextLevel(){
+    audio_nextlevel()
     curr_level++;
     drawLevel();
 }
@@ -286,6 +323,9 @@ function analyzeimg(){
             }
             if(mycolor == 'blue'){
                 walkmatrix[j][i] = ENUM_END;
+            }
+            if(mycolor == 'fuchsia'){
+                walkmatrix[j][i] = ENUM_ROCAMBOLLI;
             }
             if(mycolor == 'red'){
                 walkmatrix[j][i] = ENUM_DIE;
