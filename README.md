@@ -1,5 +1,7 @@
 # Rocambolli
 
+![Rocambolli The Game](cover_gif.gif)
+
 This is my first platformer. An entry to Ludum-Dare 37.
 
 I am using my codes below:
