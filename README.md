@@ -40,6 +40,8 @@ My tools for editing things:
 
 This is my first entry to Ludum Dare and my first finished game alone. I decided to do a genre that's well known (platformers) but that I had never done.
 
+The theme announced was ONE ROOM, and I thought on having all the game in a single screen, and the idea was that you could see all the game from first screen, in layers.
+
 I decided on JS because it is the only thing I sorta know.
 
 Then I decided to encode every information on the levels on the images, because I needed a fast way to create levels.
