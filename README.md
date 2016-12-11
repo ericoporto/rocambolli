@@ -35,3 +35,17 @@ My tools for editing things:
  - **[Audacity](http://www.audacityteam.org/) :** Audacity is how I edited and fine tuned the audio.
  
  - **[Schism Tracker](http://schismtracker.org/) :** I used this only to convert `.it` from BU's Autotracker to `.wav`.
+ 
+## Thought process
+
+This is my first entry to Ludum Dare and my first finished game alone. I decided to do a genre that's well known (platformers) but that I had never done.
+
+I decided on JS because it is the only thing I sorta know.
+
+Then I decided to encode every information on the levels on the images, because I needed a fast way to create levels.
+
+And the code is a tangle of mess, I threw every coding practice I learned to be able to finish the code in 25h - since I had other things to do this weekend.
+
+And that's it. If you like, please star.
+
+Questions, you can find me on [Twitter @eri0o](https://twitter.com/eri0o). 
