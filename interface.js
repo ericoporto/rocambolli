@@ -60,10 +60,8 @@ function updateGamepad(){
     }
 
     if(!(typeof gamepad.buttons === "undefined")) {
-      console.log('am I here?')
       if(gamepad.buttons[0].pressed == true || gamepad.buttons[1].pressed == true ){
         g_jump = true;
-        console.log('pula')
       }
     }
     if(gpad.gpadon){
@@ -87,7 +85,6 @@ function updateGamepad(){
       }
       if(gpad.jump == false && g_jump == true){
         //press jump
-        console.log('whaa')
         gpad.jump=true
         Key._pressed[Key.UP] = true;
       } else if(gpad.jump == true && g_jump == false){

@@ -9,12 +9,14 @@ ENUM_GAMEEND=5;
 COINS = 0;
 ROCAMBOLLIS = [];
 GAMED_ENDED = false;
+GAMED_ENDED1 = false;
 
 var first_action = 0;
 
 function gameEndFinal(){
   var goodend = true;
   GAMED_ENDED = true;
+  GAMED_ENDED1 = false;
   for (var i=0;i<level.length; i++){
     goodend = goodend && ROCAMBOLLIS[i]
   }
@@ -57,9 +59,11 @@ function setpixelated(context){
 
 function reset(){
     GAMED_ENDED = false;
+    GAMED_ENDED1 = false;
     bg_ctx.clearRect(0,0,w,h);
     ctx.clearRect(0,0,w,h);
     ptx.clearRect(0,0,w,h);
+    hud_ctx.clearRect(0,0,w,h);
     curr_level = 0;
     COINS = 0;
     pl.xy = [6,16];
@@ -225,9 +229,15 @@ function game_start(){
         update: function() {
           if(GAMED_ENDED){
             if (Key.isDown(Key.UP) ||Key.isDown(Key.RIGHT)||Key.isDown(Key.LEFT)){
-
+              png_font.drawText('congratulations!',[4,24],'purple',1,'yellow')
+              if(GAMED_ENDED==true && GAMED_ENDED1==false){
+                setTimeout(function(){
+                  reset()
+                },4000)
+              }
+              GAMED_ENDED1=true;
             }
-          } else {
+          }  else {
             gravity=1;
             var nothing = true;
             if (Key.isDown(Key.UP)){
