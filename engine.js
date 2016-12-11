@@ -5,10 +5,38 @@ ENUM_COIN=1;
 ENUM_END=2;
 ENUM_DIE=3;
 ENUM_ROCAMBOLLI=4;
+ENUM_GAMEEND=5;
 COINS = 0;
 ROCAMBOLLIS = [];
+GAMED_ENDED = false;
 
 var first_action = 0;
+
+function gameEndFinal(){
+  var goodend = true;
+  GAMED_ENDED = true;
+  for (var i=0;i<level.length; i++){
+    goodend = goodend && ROCAMBOLLIS[i]
+  }
+  if(goodend){
+    hud_ctx.clearRect(0,0,w,h);
+    hud_ctx.drawImage(img_goodend,0,0);
+  } else{
+    hud_ctx.clearRect(0,0,w,h);
+    hud_ctx.drawImage(img_badend,0,0);
+  }
+}
+
+function removeRocambolli(){
+  for(var i=0; i<w; i++){
+      for(var j=0; j<h; j++){
+          if(walkmatrix[j][i]== ENUM_ROCAMBOLLI){
+              walkmatrix[j][i]=ENUM_AIR
+              ctx.clearRect(i,j,1,1)
+          }
+      }
+  }
+}
 
 function update_coins(){
     hud_ctx.clearRect(w-48,2,46,16)
@@ -28,6 +56,7 @@ function setpixelated(context){
 
 
 function reset(){
+    GAMED_ENDED = false;
     bg_ctx.clearRect(0,0,w,h);
     ctx.clearRect(0,0,w,h);
     ptx.clearRect(0,0,w,h);
@@ -147,6 +176,10 @@ function game_start(){
                         audio_die()
                         reset()
                         return false
+                    } else if(walkmatrix[  xy[1] + modfier[1] - pl.h + j ][ xy[0] + modfier[0] - Math.floor(pl.w/2)+ i ] == ENUM_GAMEEND) {
+                        walkmatrix[  xy[1] + modfier[1] - pl.h + j ][ xy[0] + modfier[0] - Math.floor(pl.w/2) + i ] = ENUM_AIR;
+                        gameEndFinal()
+                        break;
                     }
                 }
             }
@@ -164,6 +197,9 @@ function game_start(){
                 audio_die()
                 reset()
                 return false
+            } else if(walkmatrix[xy[1]+modfier[1]][xy[0]+modfier[0]] == ENUM_GAMEEND){
+                walkmatrix[  xy[1] + modfier[1] - pl.h + j ][ xy[0] + modfier[0] - Math.floor(pl.w/2) + i ] = ENUM_AIR;
+                gameEndFinal()
             }
 
             if(foundcoin){
@@ -187,60 +223,65 @@ function game_start(){
                 return false
         },
         update: function() {
-          gravity=1;
-          var nothing = true;
-          if (Key.isDown(Key.UP)){
-            if(first_action ==0)first_action=1;
-            nothing = false;
-            pl.jump();
-          }
+          if(GAMED_ENDED){
+            if (Key.isDown(Key.UP) ||Key.isDown(Key.RIGHT)||Key.isDown(Key.LEFT)){
 
-          if (Key.isDown(Key.RIGHT)){
-            if(first_action ==0)first_action=1;
-            nothing = false;
-            pl.facing = 'right';
-            pl.animation = 'walking';
-            if(pl.canWalk(pl.xy,[1,0]))
-                pl.xy[0]+=1;
-          }
-
-          if (Key.isDown(Key.LEFT)){
-
-            if(first_action ==0)first_action=1;
-            nothing = false;
-            pl.facing = 'left';
-            pl.animation = 'walking';
-            if(pl.canWalk(pl.xy,[-1,0]))
-                pl.xy[0]-=1;
-          }
-
-          if(pl.isJump){
-              nothing = false;
-              if(anim_frame- pl.frameFirstJump<4){
-                pl.xy[1]=pl.xy[1]-1;
-              } else if (Key.isDown(Key.UP)){
-                pl.xy[1]=pl.xy[1]-1;
-              }
-              if(anim_frame- pl.frameFirstJump>8){
-                pl.isJump=false;
-              }
+            }
           } else {
-            if (pl.isNotGrounded()){
+            gravity=1;
+            var nothing = true;
+            if (Key.isDown(Key.UP)){
+              if(first_action ==0)first_action=1;
               nothing = false;
-              pl.xy[1]=pl.xy[1]+gravity;
-              pl.animation = 'falling';
+              pl.jump();
+            }
+
+            if (Key.isDown(Key.RIGHT)){
+              if(first_action ==0)first_action=1;
+              nothing = false;
+              pl.facing = 'right';
+              pl.animation = 'walking';
+              if(pl.canWalk(pl.xy,[1,0]))
+                  pl.xy[0]+=1;
+            }
+
+            if (Key.isDown(Key.LEFT)){
+
+              if(first_action ==0)first_action=1;
+              nothing = false;
+              pl.facing = 'left';
+              pl.animation = 'walking';
+              if(pl.canWalk(pl.xy,[-1,0]))
+                  pl.xy[0]-=1;
+            }
+
+            if(pl.isJump){
+                nothing = false;
+                if(anim_frame- pl.frameFirstJump<4){
+                  pl.xy[1]=pl.xy[1]-1;
+                } else if (Key.isDown(Key.UP)){
+                  pl.xy[1]=pl.xy[1]-1;
+                }
+                if(anim_frame- pl.frameFirstJump>8){
+                  pl.isJump=false;
+                }
             } else {
-              pl.isJump=false;
+              if (pl.isNotGrounded()){
+                nothing = false;
+                pl.xy[1]=pl.xy[1]+gravity;
+                pl.animation = 'falling';
+              } else {
+                pl.isJump=false;
+
+              }
 
             }
 
+            if(nothing){
+              pl.animation = 'standing';
+
+            }
           }
-
-          if(nothing){
-            pl.animation = 'standing';
-
-          }
-
         },
         jump: function(){
           if(!pl.isJump && !pl.isNotGrounded()){
@@ -276,12 +317,16 @@ function drawLevel(){
     ctx.clearRect(0,0,w,h);
     ctx.drawImage(level[curr_level],0,0);
     analyzeimg()
+    if(ROCAMBOLLIS[curr_level]){
+      removeRocambolli()
+    }
 
     bg_ctx.clearRect(0,0,w,h);
     for(var i=level.length-1; i>curr_level; i--){
         bg_ctx.drawImage(level[i],0,0);
         bg_ctx.drawImage(img_fog,0,0);
     }
+    bg_ctx.drawImage(img_fog,0,0);
 }
 
 function nextLevel(){
@@ -326,6 +371,9 @@ function analyzeimg(){
             }
             if(mycolor == 'fuchsia'){
                 walkmatrix[j][i] = ENUM_ROCAMBOLLI;
+            }
+            if(mycolor == 'teal'){
+                walkmatrix[j][i] = ENUM_GAMEEND;
             }
             if(mycolor == 'red'){
                 walkmatrix[j][i] = ENUM_DIE;
@@ -408,6 +456,7 @@ function draw(){
     angler = Math.floor(3*Math.sin(2*Math.PI*(increr%80)/80))
     pl.update()
     drawLoopStuff()
+    updateGamepad()
 
 
     window.requestAnimationFrame(draw);
