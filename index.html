@@ -3,16 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <style>
-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    image-rendering: optimizeSpeed;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: -o-crisp-edges;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: pixelated;
-    -ms-interpolation-mode: nearest-neighbor;
+body {
+    background-color: black;
 }
 </style>
 <script>
@@ -35,13 +27,15 @@ canvas {
 </script>
 <script type="text/javascript" src="howler.min.js"></script>
 <script type="text/javascript" src="audio.js"></script>
+<script type="text/javascript" src="mobilecheck.js"></script>
+<script type="text/javascript" src="fullscreen.js"></script>
 <script type="text/javascript" src="color.js"></script>
 <script type="text/javascript" src="pngfont.js"></script>
-<script type="text/javascript" src="interface.js"></script>
+<script type="text/javascript" src="ktg.js"></script>
 <script type="text/javascript" src="engine.js"></script>
 
 </head>
-<body onload="game_start()">
+<body onload="game_start()" bgcolor="#000000">
 <img style="display:none" id="001" src="img/ramp_001.png"/>
 <img style="display:none" id="002" src="img/ramp_002.png"/>
 <img style="display:none" id="003" src="img/ramp_003.png"/>

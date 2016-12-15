@@ -6,9 +6,11 @@ This is my first platformer. An entry to Ludum-Dare 37.
 
 [You can play here on itch.io.](https://eri0o.itch.io/rocambolli)
 
+**Update:** I created a release, and there is for download the original codebase. I am updating the code here to give support to for mobile 14/12/2016!
+
 Click on the screen when the game loads in itch, and then use **Arrow keys** and/or **WASD** keys to move the character.
 
-You can also use a **Xbox360 gamepad**, using left stick to move and A or B to jump - it must be plugged in the USB as player1, which should be default, since the code is VERY hacky.
+You can also use a **Xbox360 gamepad**, using left stick to move and A or B to jump - it must be plugged in the USB as player1.
 
 ## Code
 

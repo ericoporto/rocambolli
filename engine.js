@@ -48,12 +48,20 @@ function update_coins(){
 function update_rocambolli(){
 }
 
-function setpixelated(context){
-    context['imageSmoothingEnabled'] = false;       /* standard */
-    context['mozImageSmoothingEnabled'] = false;    /* Firefox */
-    context['oImageSmoothingEnabled'] = false;      /* Opera */
-    context['webkitImageSmoothingEnabled'] = false; /* Safari */
-    context['msImageSmoothingEnabled'] = false;     /* IE */
+function setpixelated(canvas){
+  var ctx = canvas.getContext('2d');
+  ctx['imageSmoothingEnabled'] = false;       /* standard */
+  ctx['mozImageSmoothingEnabled'] = false;    /* Firefox */
+  ctx['oImageSmoothingEnabled'] = false;      /* Opera */
+  ctx['webkitImageSmoothingEnabled'] = false; /* Safari */
+  ctx['msImageSmoothingEnabled'] = false;     /* IE */
+  canvas.style.imageRendering = 'optimizeSpeed';
+  canvas.style.imageRendering = '-moz-crisp-edges';
+  canvas.style.imageRendering = '-o-crisp-edges';
+  canvas.style.imageRendering = '-webkit-optimize-contrast';
+  canvas.style.imageRendering = 'optimize-contrast';
+  canvas.style.imageRendering = 'crisp-edges';
+  canvas.style.imageRendering = 'pixelated';
 }
 
 
@@ -84,19 +92,21 @@ function game_start(){
 
     bg_c = document.getElementById('bg_canvas')
     bg_ctx = bg_c.getContext("2d")
-    setpixelated(bg_ctx)
+    setpixelated(bg_c)
 
     c = document.getElementById('level_canvas')
     ctx = c.getContext("2d")
-    setpixelated(ctx);
+    setpixelated(c);
 
     pc = document.getElementById('player_canvas')
     ptx = pc.getContext("2d")
-    setpixelated(ptx);
+    setpixelated(pc);
 
     hud_c = document.getElementById('hud_canvas')
     hud_ctx = hud_c.getContext("2d")
-    setpixelated(hud_ctx);
+    setpixelated(hud_c);
+
+    fullscreen.setup();
 
     png_font.setup( hud_ctx ,"img/unifont.png", function(){
       png_font.drawText("Rocambolli!", [0,0],'yellow',1,'purple');
@@ -106,9 +116,10 @@ function game_start(){
       audio_start()
     })
 
-    w = 160
-    h = 90
-    walkmatrix = Create2DArray(c.height)
+    w = 160;
+    h = 90;
+    walkmatrix = Create2DArray(c.height);
+
 
     pl = {
         anim: {
@@ -132,7 +143,7 @@ function game_start(){
         isJump: false,
         frameFirstJump: 0,
         isNotGrounded: function() {
-            return pl.canWalk(pl.xy,[0,1])
+            return pl.canWalk(pl.xy,[0,1],'DOWN')
         },
         grabCoin: function(xy){
             ctx.clearRect(xy[0]-1,xy[1]-1,3,3)
@@ -220,15 +231,24 @@ function game_start(){
 
             return true
         },
-        canWalk: function(xy,modfier){
-            if(pl.checkMatrix(xy,modfier))
+        canWalk: function(xy,modfier,direction){
+            if(pl.checkMatrix(xy,modfier)){
+                if(direction=='LEFT' || direction=='RIGHT'){
+                  if(walkmatrix[xy[1]+modfier[1]  ][xy[0]+modfier[0]]!=ENUM_AIR &&
+                     walkmatrix[xy[1]+modfier[1]-1][xy[0]+modfier[0]]==ENUM_AIR &&
+                     walkmatrix[xy[1]+modfier[1]-2][xy[0]+modfier[0]]==ENUM_AIR &&
+                     walkmatrix[xy[1]+modfier[1]-3][xy[0]+modfier[0]]==ENUM_AIR ){
+                       pl.xy[1]=pl.xy[1]-2;
+                     }
+                }
+
                 return walkmatrix[xy[1]+modfier[1]][xy[0]+modfier[0]] == ENUM_AIR;
-            else
+           }  else
                 return false
         },
         update: function() {
           if(GAMED_ENDED){
-            if (Key.isDown(Key.UP) ||Key.isDown(Key.RIGHT)||Key.isDown(Key.LEFT)){
+            if (ktg.isPressed(ktg.key.UP) ||ktg.isPressed(ktg.key.RIGHT)||ktg.isPressed(ktg.key.LEFT)|| ktg.isPressed(ktg.key.BUTTONA)|| ktg.isPressed(ktg.key.BUTTONB)){
               png_font.drawText('congratulations!',[4,24],'purple',1,'yellow')
               if(GAMED_ENDED==true && GAMED_ENDED1==false){
                 setTimeout(function(){
@@ -240,28 +260,28 @@ function game_start(){
           }  else {
             gravity=1;
             var nothing = true;
-            if (Key.isDown(Key.UP)){
+            if (ktg.isPressed(ktg.key.UP) || ktg.isPressed(ktg.key.BUTTONA)|| ktg.isPressed(ktg.key.BUTTONB)){
               if(first_action ==0)first_action=1;
               nothing = false;
               pl.jump();
             }
 
-            if (Key.isDown(Key.RIGHT)){
+            if (ktg.isPressed(ktg.key.RIGHT)){
               if(first_action ==0)first_action=1;
               nothing = false;
               pl.facing = 'right';
               pl.animation = 'walking';
-              if(pl.canWalk(pl.xy,[1,0]))
+              if(pl.canWalk(pl.xy,[1,0],'RIGHT'))
                   pl.xy[0]+=1;
             }
 
-            if (Key.isDown(Key.LEFT)){
+            if (ktg.isPressed(ktg.key.LEFT)){
 
               if(first_action ==0)first_action=1;
               nothing = false;
               pl.facing = 'left';
               pl.animation = 'walking';
-              if(pl.canWalk(pl.xy,[-1,0]))
+              if(pl.canWalk(pl.xy,[-1,0],'LEFT'))
                   pl.xy[0]-=1;
             }
 
@@ -269,7 +289,7 @@ function game_start(){
                 nothing = false;
                 if(anim_frame- pl.frameFirstJump<4){
                   pl.xy[1]=pl.xy[1]-1;
-                } else if (Key.isDown(Key.UP)){
+                } else if (ktg.isPressed(ktg.key.UP)|| ktg.isPressed(ktg.key.BUTTONA)|| ktg.isPressed(ktg.key.BUTTONB)){
                   pl.xy[1]=pl.xy[1]-1;
                 }
                 if(anim_frame- pl.frameFirstJump>8){
@@ -315,6 +335,9 @@ function game_start(){
     increr = 0;
 
     resize();
+    ktg.setup(false, window.mobilecheck());
+    setTimeout(resize,1000);
+    setTimeout(resize,3500);
     reset();
     draw();
 
@@ -395,18 +418,37 @@ function analyzeimg(){
 }
 
 function resize(){
-    bg_c.style.height = window.innerHeight + 'px';
-    bg_c.style.width = window.innerWidth + 'px';
-    c.style.height = window.innerHeight + 'px';
-    c.style.width = window.innerWidth + 'px';
-    pc.style.height = window.innerHeight + 'px';
-    pc.style.width = window.innerWidth + 'px';
-    hud_c.style.height = window.innerHeight + 'px';
-    hud_c.style.width = window.innerWidth + 'px';
-    setpixelated(bg_ctx)
-    setpixelated(ctx);
-    setpixelated(ptx);
-    setpixelated(hud_ctx);
+    function correctCanvas(canvas){
+        if(window.innerHeight>window.innerWidth){
+          //portrait
+          canvas.style.height = Math.floor(window.innerWidth*10/16.0) + 'px';
+          canvas.style.width = Math.floor(window.innerWidth) + 'px';
+          canvas.style.position = 'absolute';
+          canvas.style.top= 0;
+          canvas.style.bottom= parseInt(window.innerHeight, 10)-parseInt(canvas.style.height, 10);
+          canvas.style.left= 0;
+          canvas.style.right= 0;
+          canvas.style.margin= '0 auto';
+        } else {
+          //landscape
+          canvas.style.height = Math.floor(window.innerHeight*0.8) + 'px';
+          canvas.style.width = Math.floor(window.innerHeight*16*0.8/9.0) + 'px';
+          canvas.style.position = 'absolute';
+          canvas.style.top= 0;
+          canvas.style.bottom= 0;
+          canvas.style.left= 0;
+          canvas.style.right= 0;
+          canvas.style.margin= 'auto';
+        }
+
+        setpixelated(canvas)
+    }
+
+    correctCanvas(bg_c);
+    correctCanvas(c);
+    correctCanvas(pc);
+    correctCanvas(hud_c);
+    ktg.resize();
 }
 
 function drawPixel(xy,r,g,b,a){
@@ -459,14 +501,14 @@ function drawLoopStuff(angl){
 }
 
 window.addEventListener('resize', resize, false);
-window.addEventListener('orientationchange', resize, false);
+window.addEventListener('orientationchange', function(){resize(); setTimeout(resize,1000);}, false);
 
 function draw(){
     increr++
     angler = Math.floor(3*Math.sin(2*Math.PI*(increr%80)/80))
     pl.update()
     drawLoopStuff()
-    updateGamepad()
+    ktg.updateGamepad()
 
 
     window.requestAnimationFrame(draw);
