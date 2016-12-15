@@ -4,9 +4,11 @@
 
 This is my first platformer. An entry to Ludum-Dare 37.
 
-[You can play here on itch.io.](https://eri0o.itch.io/rocambolli)
+[You can play the original here on itch.io.](https://eri0o.itch.io/rocambolli)
 
 **Update:** I created a release, and there is for download the original codebase. I am updating the code here to give support to for mobile 14/12/2016!
+
+[**new version can be played here**](http://ericoporto.github.io/rocambolli/)
 
 Click on the screen when the game loads in itch, and then use **Arrow keys** and/or **WASD** keys to move the character.
 
