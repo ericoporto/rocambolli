@@ -106,8 +106,6 @@ function game_start(){
     hud_ctx = hud_c.getContext("2d")
     setpixelated(hud_c);
 
-    fullscreen.setup();
-
     png_font.setup( hud_ctx ,"img/unifont.png", function(){
       png_font.drawText("Rocambolli!", [0,0],'yellow',1,'purple');
       png_font.drawText("The Game",[16,16],'yellow',2,'purple');
@@ -336,8 +334,14 @@ function game_start(){
 
     resize();
     ktg.setup(false, window.mobilecheck());
-    setTimeout(resize,1000);
-    setTimeout(resize,3500);
+    setTimeout(resize,5000);
+
+    function fireResizeEvent() {
+     window.dispatchEvent(new Event('orientationchange'));
+    }
+
+    setTimeout(fireResizeEvent,6500);
+
     reset();
     draw();
 
