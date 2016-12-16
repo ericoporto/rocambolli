@@ -13,6 +13,7 @@ GAMED_ENDED = false;
 GAMED_ENDED1 = false;
 right_accell = 0;
 left_accell = 0;
+lastpressframe = 0;
 
 var first_action = 0;
 
@@ -261,6 +262,18 @@ function game_start(){
           }  else {
             gravity=1;
             var nothing = true;
+            if (ktg.isPressed(ktg.key.UP) || ktg.isPressed(ktg.key.BUTTONA)||
+                ktg.isPressed(ktg.key.BUTTONB) || ktg.isPressed(ktg.key.LEFT) ||
+                ktg.isPressed(ktg.key.RIGHT)){
+                  lastpressframe = anim_frame;
+                }
+
+            if(anim_frame - lastpressframe> 6){
+              left_accell=0;
+              right_accell=0;
+
+            }
+
             if (ktg.isPressed(ktg.key.UP) || ktg.isPressed(ktg.key.BUTTONA)|| ktg.isPressed(ktg.key.BUTTONB)){
               if(first_action ==0)first_action=1;
               nothing = false;
