@@ -11,6 +11,8 @@ COINS = 0;
 ROCAMBOLLIS = [];
 GAMED_ENDED = false;
 GAMED_ENDED1 = false;
+right_accell = 0;
+left_accell = 0;
 
 var first_action = 0;
 
@@ -268,23 +270,35 @@ function game_start(){
             if (ktg.isPressed(ktg.key.RIGHT)){
               if(first_action ==0)first_action=1;
               nothing = false;
+              right_accell+=1;
+              left_accell=0;
               pl.facing = 'right';
               pl.animation = 'walking';
-              if(pl.canWalk(pl.xy,[1,0],'RIGHT'))
-                  pl.xy[0]+=1;
+              if(right_accell==1 || right_accell==4 || right_accell>=6){
+                if(pl.canWalk(pl.xy,[1,0],'RIGHT'))
+                    pl.xy[0]+=1;
+              }
             }
 
             if (ktg.isPressed(ktg.key.LEFT)){
 
               if(first_action ==0)first_action=1;
               nothing = false;
+              right_accell=0;
+              left_accell+=1;
               pl.facing = 'left';
               pl.animation = 'walking';
-              if(pl.canWalk(pl.xy,[-1,0],'LEFT'))
-                  pl.xy[0]-=1;
+              if(left_accell==1 || left_accell==4 || left_accell>=6){
+                if(pl.canWalk(pl.xy,[-1,0],'LEFT'))
+                    pl.xy[0]-=1;
+              }
             }
 
             if(pl.isJump){
+                if(anim_frame- pl.frameFirstJump<2 && !(ktg.isPressed(ktg.key.LEFT)) && !(ktg.isPressed(ktg.key.RIGHT))){
+                  left_accell=0;
+                  right_accell=0;
+                }
                 nothing = false;
                 if(anim_frame- pl.frameFirstJump<4){
                   pl.xy[1]=pl.xy[1]-1;
@@ -441,7 +455,7 @@ function resize(){
             canvas.style.width = Math.floor(window.innerHeight*16*0.8/9.0) + 'px';
           } else {
             canvas.style.height = Math.floor(window.innerHeight) + 'px';
-            canvas.style.width = Math.floor(window.innerWidth) + 'px';            
+            canvas.style.width = Math.floor(window.innerWidth) + 'px';
           }
           canvas.style.position = 'absolute';
           canvas.style.top= 0;
