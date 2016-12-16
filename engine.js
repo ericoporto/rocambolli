@@ -1,4 +1,5 @@
 
+MOBILE=window.mobilecheck();
 ENUM_GROUND = 255;
 ENUM_AIR=0;
 ENUM_COIN=1;
@@ -333,7 +334,7 @@ function game_start(){
     increr = 0;
 
     resize();
-    ktg.setup(false, window.mobilecheck());
+    ktg.setup(false, MOBILE);
     setTimeout(resize,5000);
 
     function fireResizeEvent() {
@@ -435,8 +436,13 @@ function resize(){
           canvas.style.margin= '0 auto';
         } else {
           //landscape
-          canvas.style.height = Math.floor(window.innerHeight*0.8) + 'px';
-          canvas.style.width = Math.floor(window.innerHeight*16*0.8/9.0) + 'px';
+          if(MOBILE){
+            canvas.style.height = Math.floor(window.innerHeight*0.8) + 'px';
+            canvas.style.width = Math.floor(window.innerHeight*16*0.8/9.0) + 'px';
+          } else {
+            canvas.style.height = Math.floor(window.innerHeight) + 'px';
+            canvas.style.width = Math.floor(window.innerWidth) + 'px';            
+          }
           canvas.style.position = 'absolute';
           canvas.style.top= 0;
           canvas.style.bottom= 0;
