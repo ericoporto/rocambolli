@@ -14,6 +14,8 @@ Click on the screen when the game loads in itch, and then use **Arrow keys** and
 
 You can also use a **Xbox360 gamepad**, using left stick to move and A or B to jump - it must be plugged in the USB as player1.
 
+[**Gameplay Video on Youtube**](https://www.youtube.com/watch?v=qD31Xi_jaNY)
+
 ## Code
 
 I am using my own codes below:
